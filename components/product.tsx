@@ -140,11 +140,13 @@ export default function Product() {
                         form.setFieldsValue({
                           sights: form
                             .getFieldValue('sights')
-                            .map((sight: Sight, sightIndex: number) =>
-                              sightIndex === index
-                                ? { area: value, sight: sights[`${value}`] }
-                                : sight
-                            ),
+                            .map((sight: Sight, sightIndex: number) => ({
+                              ...sight,
+                              sight:
+                                sightIndex === index
+                                  ? sights[`${value}`][0]
+                                  : sight.sight,
+                            })),
                         })
                       }
                       style={{ width: 185 }}
