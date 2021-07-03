@@ -1,8 +1,23 @@
 import { Form, Input, Checkbox, Button, Select, Space } from 'antd'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import React from 'react'
+import { SelectValue } from 'antd/lib/select'
 
 const { Option } = Select
+
+const areas = [
+  { label: 'Beijing', value: 'Beijing' },
+  { label: 'Shanghai', value: 'Shanghai' },
+]
+
+interface Sights {
+  [key: string]: string[]
+}
+
+const sights: Sights = {
+  Beijing: ['Tiananmen', 'Great Wall'],
+  Shanghai: ['Oriental Pearl', 'The Bund'],
+}
 
 const formItemLayout = {
   labelCol: {
@@ -21,7 +36,17 @@ const formItemLayoutWithOutLabel = {
   },
 }
 
+interface FormType {
+  username: string
+  password: string
+  remember: boolean
+  area: string
+  sights: string[]
+}
+
 export default function Product() {
+  const [form] = Form.useForm<FormType>()
+
   const onFinish = (values: any) => {
     console.log('Success:', values)
   }
@@ -30,17 +55,32 @@ export default function Product() {
     console.log('Failed:', errorInfo)
   }
 
+  const handleChange = (value: SelectValue, key: number) => {
+    const newSights = form.getFieldValue('sights')
+    newSights.splice(key, 1, {
+      area: value,
+      sight: sights[`${value}`],
+    })
+    form.setFieldsValue({ sights: newSights })
+  }
+
+  const getArea = (key: number): string => {
+    const { area } = form.getFieldValue('sights')[key]
+    return area
+  }
+
   return (
     <Form
-      name="dynamic_form_item"
+      form={form}
+      name="dynamic_form_nest_item"
       {...formItemLayout}
       initialValues={{
         username: 'Luke',
         password: '123456',
         remember: true,
-        names: [
-          { first: 'lucy', last: 'jack' },
-          { first: 'jack', last: 'lucy' },
+        sights: [
+          { area: areas[0].value, sight: sights.Beijing[0] },
+          { area: areas[1].value, sight: sights.Shanghai[0] },
         ],
       }}
       onFinish={onFinish}
@@ -71,12 +111,12 @@ export default function Product() {
       </Form.Item>
 
       <Form.List
-        name="names"
+        name="sights"
         rules={[
           {
             validator: async (_, names) => {
               if (!names || names.length < 2) {
-                return Promise.reject(new Error('At least 2 passengers'))
+                return Promise.reject(new Error('At least 2 sights'))
               }
             },
           },
@@ -87,7 +127,7 @@ export default function Product() {
             {fields.map(({ key, name, fieldKey, ...restField }, index) => (
               <Form.Item
                 {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
-                label={index === 0 ? 'Passengers' : ''}
+                label={index === 0 ? 'Sight' : ''}
                 required={false}
                 key={key}
               >
@@ -98,33 +138,30 @@ export default function Product() {
                 >
                   <Form.Item
                     {...restField}
-                    name={[name, 'first']}
-                    fieldKey={[fieldKey, 'first']}
-                    validateTrigger={['onChange', 'onBlur']}
+                    name={[name, 'area']}
+                    fieldKey={[fieldKey, 'area']}
                     noStyle
                   >
-                    <Select style={{ width: 185 }}>
-                      <Option value="jack">Jack</Option>
-                      <Option value="lucy">Lucy</Option>
-                      <Option value="disabled" disabled>
-                        Disabled
-                      </Option>
-                    </Select>
+                    <Select
+                      options={areas}
+                      onChange={(value) => handleChange(value, key)}
+                      style={{ width: 185 }}
+                    />
                   </Form.Item>
                   <Form.Item
                     {...restField}
-                    name={[name, 'last']}
-                    fieldKey={[fieldKey, 'last']}
+                    name={[name, 'sight']}
+                    fieldKey={[fieldKey, 'sight']}
                     validateTrigger={['onChange', 'onBlur']}
                     noStyle
                   >
-                    <Select style={{ width: 185 }}>
-                      <Option value="jack">Jack</Option>
-                      <Option value="lucy">Lucy</Option>
-                      <Option value="disabled" disabled>
-                        Disabled
-                      </Option>
-                    </Select>
+                    <Select
+                      options={sights[getArea(key)].map((sight) => ({
+                        label: sight,
+                        value: sight,
+                      }))}
+                      style={{ width: 185 }}
+                    />
                   </Form.Item>
                   {fields.length > 1 ? (
                     <MinusCircleOutlined
@@ -139,7 +176,9 @@ export default function Product() {
               <Button
                 type="dashed"
                 onClick={() => {
-                  add({ first: 'lucy', last: 'jack' })
+                  const [{ value: area }] = areas
+                  const [sight] = sights[area]
+                  add({ area, sight })
                 }}
                 style={{ width: '40%', marginTop: '20px' }}
                 icon={<PlusOutlined />}
