@@ -1,9 +1,7 @@
+import React from 'react'
 import { Form, Input, Checkbox, Button, Select, Space } from 'antd'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import React from 'react'
 import { SelectValue } from 'antd/lib/select'
-
-const { Option } = Select
 
 const areas = [
   { label: 'Beijing', value: 'Beijing' },
@@ -40,8 +38,7 @@ interface FormType {
   username: string
   password: string
   remember: boolean
-  area: string
-  sights: string[]
+  sights: { area: string; sight: string }[]
 }
 
 export default function Product() {
@@ -61,12 +58,8 @@ export default function Product() {
       area: value,
       sight: sights[`${value}`],
     })
-    form.setFieldsValue({ sights: newSights })
-  }
-
-  const getArea = (key: number): string => {
-    const { area } = form.getFieldValue('sights')[key]
-    return area
+    console.log(newSights)
+    // form.setFieldsValue({ sights: newSights })
   }
 
   return (
@@ -149,20 +142,34 @@ export default function Product() {
                     />
                   </Form.Item>
                   <Form.Item
-                    {...restField}
-                    name={[name, 'sight']}
-                    fieldKey={[fieldKey, 'sight']}
-                    validateTrigger={['onChange', 'onBlur']}
                     noStyle
+                    shouldUpdate={(prevValues: FormType, curValues: FormType) =>
+                      prevValues.sights[key] !== curValues.sights[key] ||
+                      prevValues.sights.length !== curValues.sights.length
+                    }
                   >
-                    <Select
-                      options={sights[getArea(key)].map((sight) => ({
-                        label: sight,
-                        value: sight,
-                      }))}
-                      style={{ width: 185 }}
-                    />
+                    {() => (
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'sight']}
+                        fieldKey={[fieldKey, 'sight']}
+                        validateTrigger={['onChange', 'onBlur']}
+                        noStyle
+                      >
+                        <Select
+                          options={(form.getFieldValue('sights')[key]
+                            ? sights[form.getFieldValue('sights')[key].area]
+                            : []
+                          ).map((sight: string) => ({
+                            label: sight,
+                            value: sight,
+                          }))}
+                          style={{ width: 185 }}
+                        />
+                      </Form.Item>
+                    )}
                   </Form.Item>
+
                   {fields.length > 1 ? (
                     <MinusCircleOutlined
                       className="dynamic-delete-button"
