@@ -1,18 +1,17 @@
 import React from 'react'
-import { Form, Input, Checkbox, Button, Select, Space } from 'antd'
+import { Form, Input, InputNumber, Checkbox, Button, Select, Space } from 'antd'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import { SelectValue } from 'antd/lib/select'
 
 const areas = [
   { label: 'Beijing', value: 'Beijing' },
   { label: 'Shanghai', value: 'Shanghai' },
 ]
 
-interface Sights {
+interface SightOptions {
   [key: string]: string[]
 }
 
-const sights: Sights = {
+const sights: SightOptions = {
   Beijing: ['Tiananmen', 'Great Wall'],
   Shanghai: ['Oriental Pearl', 'The Bund'],
 }
@@ -34,11 +33,16 @@ const formItemLayoutWithOutLabel = {
   },
 }
 
+interface Sight {
+  area: string
+  sight: string
+}
+
 interface FormType {
   username: string
   password: string
   remember: boolean
-  sights: { area: string; sight: string }[]
+  sights: Sight[]
 }
 
 export default function Product() {
@@ -50,16 +54,6 @@ export default function Product() {
 
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo)
-  }
-
-  const handleChange = (value: SelectValue, key: number) => {
-    const newSights = form.getFieldValue('sights')
-    newSights.splice(key, 1, {
-      area: value,
-      sight: sights[`${value}`],
-    })
-    console.log(newSights)
-    // form.setFieldsValue({ sights: newSights })
   }
 
   return (
@@ -88,9 +82,14 @@ export default function Product() {
       </Form.Item>
 
       <Form.Item
-        label="Password"
         name="password"
-        rules={[{ required: true, message: 'Please input your password!' }]}
+        label="Password"
+        rules={[
+          {
+            required: true,
+            message: 'Please input your password!',
+          },
+        ]}
       >
         <Input.Password style={{ width: '40%' }} />
       </Form.Item>
@@ -137,37 +136,37 @@ export default function Product() {
                   >
                     <Select
                       options={areas}
-                      onChange={(value) => handleChange(value, key)}
+                      onChange={(value) =>
+                        form.setFieldsValue({
+                          sights: form
+                            .getFieldValue('sights')
+                            .map((sight: Sight, sightIndex: number) =>
+                              sightIndex === index
+                                ? { area: value, sight: sights[`${value}`] }
+                                : sight
+                            ),
+                        })
+                      }
                       style={{ width: 185 }}
                     />
                   </Form.Item>
+
                   <Form.Item
+                    {...restField}
+                    name={[name, 'sight']}
+                    fieldKey={[fieldKey, 'sight']}
+                    validateTrigger={['onChange', 'onBlur']}
                     noStyle
-                    shouldUpdate={(prevValues: FormType, curValues: FormType) =>
-                      prevValues.sights[key] !== curValues.sights[key] ||
-                      prevValues.sights.length !== curValues.sights.length
-                    }
                   >
-                    {() => (
-                      <Form.Item
-                        {...restField}
-                        name={[name, 'sight']}
-                        fieldKey={[fieldKey, 'sight']}
-                        validateTrigger={['onChange', 'onBlur']}
-                        noStyle
-                      >
-                        <Select
-                          options={(form.getFieldValue('sights')[key]
-                            ? sights[form.getFieldValue('sights')[key].area]
-                            : []
-                          ).map((sight: string) => ({
-                            label: sight,
-                            value: sight,
-                          }))}
-                          style={{ width: 185 }}
-                        />
-                      </Form.Item>
-                    )}
+                    <Select
+                      options={sights[
+                        form.getFieldValue(['sights', index, 'area'])
+                      ].map((sight) => ({
+                        label: sight,
+                        value: sight,
+                      }))}
+                      style={{ width: 185 }}
+                    />
                   </Form.Item>
 
                   {fields.length > 1 ? (
@@ -197,10 +196,16 @@ export default function Product() {
           </>
         )}
       </Form.List>
+
       <Form.Item wrapperCol={{ offset: 4 }}>
-        <Button type="primary" htmlType="submit">
-          Submit
-        </Button>
+        <Space>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+          <Button type="ghost" onClick={() => form.resetFields()}>
+            Reset
+          </Button>
+        </Space>
       </Form.Item>
     </Form>
   )
