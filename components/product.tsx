@@ -1,6 +1,6 @@
-import React from 'react'
-import { Form, Input, InputNumber, Checkbox, Button, Select, Space } from 'antd'
+import { Form, Input, Checkbox, Button, Select, Space } from 'antd'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
+import { RangePicker } from './date'
 
 const areas = [
   { label: 'Beijing', value: 'Beijing' },
@@ -92,6 +92,19 @@ export default function Product() {
         ]}
       >
         <Input.Password style={{ width: '40%' }} />
+      </Form.Item>
+
+      <Form.Item
+        label="Date"
+        name="date"
+        rules={[
+          {
+            required: true,
+            message: 'Please input a date!',
+          },
+        ]}
+      >
+        <RangePicker showTime allowClear allowEmpty={[false, true]} />
       </Form.Item>
 
       <Form.Item
