@@ -23,3 +23,16 @@ export function findCommonDateIndexes(dates: string[]) {
   })
   return dateIndexes
 }
+
+export function filterCommonDates(dates: string[]) {
+  const datesArray: string[] = []
+  dates.forEach((date, index) =>
+    datesArray.includes(date) ? null : datesArray.push(date)
+  )
+
+  // dates.forEach((date, index) =>
+  //   datesArray.includes(date) ? datesArray.push(date) : null
+  // )
+
+  console.log(datesArray)
+}
