@@ -1,7 +1,7 @@
 import { Form, Input, Checkbox, Button, Select, Space } from 'antd'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { RangePicker } from './date'
-import { filterCommonDates } from '../utils/datetime'
+import { findCommonDateIndexes } from '../utils/datetime'
 
 const areas = [
   { label: 'Beijing', value: 'Beijing' },
@@ -66,7 +66,9 @@ export default function Product() {
     console.log('Failed:', errorInfo)
   }
 
-  const commonDateIndexes = filterCommonDates(dates)
+  const commonDateIndexes = findCommonDateIndexes(dates)
+
+  console.log(commonDateIndexes)
 
   return (
     <Form

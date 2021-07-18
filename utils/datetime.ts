@@ -24,15 +24,18 @@ export function findCommonDateIndexes(dates: string[]) {
   return dateIndexes
 }
 
+const initialValue: string[] = []
+
+function reducer(
+  accumulator: string[],
+  currentValue: string,
+  index: number,
+  array: string[]
+) {
+  accumulator.includes(currentValue) ? null : accumulator.push(currentValue)
+  return accumulator
+}
+
 export function filterCommonDates(dates: string[]) {
-  const datesArray: string[] = []
-  dates.forEach((date, index) =>
-    datesArray.includes(date) ? null : datesArray.push(date)
-  )
-
-  // dates.forEach((date, index) =>
-  //   datesArray.includes(date) ? datesArray.push(date) : null
-  // )
-
-  console.log(datesArray)
+  return dates.reduce(reducer, initialValue)
 }
