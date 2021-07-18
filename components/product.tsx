@@ -1,6 +1,7 @@
 import { Form, Input, Checkbox, Button, Select, Space } from 'antd'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { RangePicker } from './date'
+import { findCommonDateIndexes } from '../utils/datetime'
 
 const areas = [
   { label: 'Beijing', value: 'Beijing' },
@@ -15,6 +16,15 @@ const sights: SightOptions = {
   Beijing: ['Tiananmen', 'Great Wall'],
   Shanghai: ['Oriental Pearl', 'The Bund'],
 }
+
+const dates = [
+  '2018-04-04T16:00:00.000Z',
+  '2018-04-04T16:00:00.000Z',
+  '2018-04-04T16:00:00.000Z',
+  '2019-04-04T16:00:00.000Z',
+  '2019-04-04T16:00:00.000Z',
+  '2019-04-04T16:00:00.000Z',
+]
 
 const formItemLayout = {
   labelCol: {
@@ -55,6 +65,11 @@ export default function Product() {
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo)
   }
+
+  console.log('Dates: ', dates)
+
+  const commonDateIndexes = findCommonDateIndexes(dates)
+  console.log('Common Date Indexes: ', commonDateIndexes)
 
   return (
     <Form
