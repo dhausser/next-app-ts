@@ -1,7 +1,14 @@
-import { Form, Input, Checkbox, Button, Select, Space } from 'antd'
+import {
+  Form,
+  Input,
+  Checkbox,
+  Button,
+  Select,
+  Space,
+  FormInstance,
+} from 'antd'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import { StringDatePicker, dayjs } from './date/stringdatepicker'
-import { DatePicker } from './date'
+import { StringDatePicker } from './date/stringdatepicker'
 import { findCommonDateIndexes } from '../utils/datetime'
 import { Dayjs } from 'dayjs'
 
@@ -62,7 +69,9 @@ interface FormType {
   sights: Sight[]
 }
 
-export default function Product() {
+export default function Product(): React.FunctionComponentElement<
+  FormInstance<FormType>
+> {
   const onFinish = (values: any) => {
     console.log('Success:', values)
   }
@@ -94,7 +103,7 @@ export default function Product() {
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
     >
-      {({ setFieldsValue, resetFields }) => (
+      {({ setFieldsValue, resetFields, ...rest }) => (
         <>
           <Form.Item
             label="Username"
@@ -123,7 +132,7 @@ export default function Product() {
             name="date"
             tooltip="Timezone: Europe/Warsaw"
             normalize={(value) => {
-              console.log('normalize', value)
+              console.log(rest)
               return value
             }}
           >

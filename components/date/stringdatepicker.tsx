@@ -1,7 +1,6 @@
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
-import { Form } from 'antd'
 import { PickerProps } from 'antd/es/date-picker/generatePicker'
 import { DatePicker } from '.'
 
@@ -13,9 +12,9 @@ dayjs.tz.setDefault('America/New_York')
 // String to date
 export const stringToDate = (date?: string) => (date ? dayjs(date) : null)
 
-// interface Props extends Omit<PickerProps<dayjs.Dayjs>, 'value'> {
-//   value?: string
-// }
+interface Props extends Omit<PickerProps<dayjs.Dayjs>, 'value'> {
+  value?: string
+}
 
 function StringDatePicker(
   props: PickerProps<dayjs.Dayjs>

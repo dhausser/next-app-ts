@@ -8,7 +8,7 @@ import {
 
 const { SubMenu } = Menu
 
-export default function Nav() {
+export default function Nav(): React.FunctionComponentElement<Menu> | null {
   const [showChild, setShowChild] = useState(false)
 
   useEffect(() => {
